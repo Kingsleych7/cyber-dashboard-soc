@@ -1,26 +1,29 @@
 require("dotenv").config();
+
 const express = require("express");
 const http = require("http");
 const WebSocket = require("ws");
 const cors = require("cors");
-app.use(cors());
 
 const connectDB = require("./config/db");
 
-const app = express();
+const app = express();   // ✅ MUST COME FIRST
+
+app.use(cors());
 app.use(express.json());
-app.use((err, req, res, next) => {
-  console.error(err.stack);
+// =====================
+// APP INIT (MUST FIRST)
+// =====================
+const app = express();
 
-  res.status(500).json({
-    error: "Internal SOC server error"
-  });
-});
-
-// 🔗 connect database
+// =====================
+// DB CONNECTION
+// =====================
 connectDB();
 
-// routes
+// =====================
+// ROUTES
+// =====================
 app.use("/scan", require("./routes/scan"));
 app.use("/dns", require("./routes/dns"));
 app.use("/web", require("./routes/web"));
@@ -28,13 +31,16 @@ app.use("/auth", require("./routes/auth"));
 app.use("/incidents", require("./routes/incidents"));
 app.use("/analytics", require("./routes/analytics"));
 
-// ✅ CREATE HTTP SERVER
+// =====================
+// HTTP SERVER
+// =====================
 const server = http.createServer(app);
 
-// ✅ CREATE WEBSOCKET SERVER (THIS WAS MISSING)
+// =====================
+// WEBSOCKET (REAL-TIME SOC)
+// =====================
 const wss = new WebSocket.Server({ server });
 
-// store clients
 let clients = [];
 
 wss.on("connection", (ws) => {
@@ -45,7 +51,9 @@ wss.on("connection", (ws) => {
   });
 });
 
-// broadcast function
+// =====================
+// BROADCAST FUNCTION
+// =====================
 function broadcast(data) {
   clients.forEach(client => {
     if (client.readyState === 1) {
@@ -54,13 +62,22 @@ function broadcast(data) {
   });
 }
 
-// export broadcast (important)
-module.exports.broadcast = broadcast;
+// =====================
+// ERROR HANDLER (MUST LAST)
+// =====================
+app.use((err, req, res, next) => {
+  console.error(err.stack);
 
-// start server
+  res.status(500).json({
+    error: "Internal SOC server error"
+  });
+});
+
+// =====================
+// START SERVER
+// =====================
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   console.log(`🛡️ SOC Server running on port ${PORT}`);
 });
-
