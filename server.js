@@ -11,10 +11,6 @@ const app = express();   // ✅ MUST COME FIRST
 
 app.use(cors());
 app.use(express.json());
-// =====================
-// APP INIT (MUST FIRST)
-// =====================
-const app = express();
 
 // =====================
 // DB CONNECTION
