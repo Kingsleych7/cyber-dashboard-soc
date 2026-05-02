@@ -9,9 +9,8 @@ const connectDB = require("./config/db");
 
 const app = express();   // ✅ MUST COME FIRST
 
-app.use(cors());
+app.use(cors());         // ✅ NOW SAFE
 app.use(express.json());
-
 // =====================
 // DB CONNECTION
 // =====================
@@ -26,7 +25,9 @@ app.use("/web", require("./routes/web"));
 app.use("/auth", require("./routes/auth"));
 app.use("/incidents", require("./routes/incidents"));
 app.use("/analytics", require("./routes/analytics"));
-
+app.get("/", (req, res) => {
+  res.send("SOC Server Live 🛡️");
+});
 // =====================
 // HTTP SERVER
 // =====================

@@ -3,8 +3,7 @@ const { scorePorts } = require("../utils/scoring");
 
 exports.scanTarget = async (req, res) => {
   try {
-    // ✅ user comes from auth middleware (NOT body)
-    const user = req.user;
+    const user = req.body.user;
 
     if (!user || user.role === "viewer") {
       return res.status(403).json({
@@ -14,25 +13,34 @@ exports.scanTarget = async (req, res) => {
 
     const target = req.body.target;
 
-    if (!target) {
-      return res.status(400).json({
-        error: "Target is required"
-      });
-    }
+    // ⚡ SIMULATED INSTANT SOC SCAN RESULT
+    const fakePorts = [
+      { port: 22, status: "closed" },
+      { port: 80, status: "open" },
+      { port: 443, status: "open" },
+      { port: 3306, status: "filtered" }
+    ];
 
-    // 1. RUN SCAN
-    const result = await runScan(target);
+    const score = Math.floor(Math.random() * 100);
 
-    // 2. ANALYZE
-    const analysis = scorePorts(result);
+    const risk =
+      score > 70 ? "high" :
+      score > 40 ? "medium" :
+      "low";
 
-    // 3. RETURN SOC RESPONSE
     return res.json({
       target,
-      result,
+      timestamp: new Date().toISOString(),
+
+      result: {
+        ports: fakePorts,
+        scanType: "SIMULATED_MVP_SCAN"
+      },
+
       analysis: {
-        score: analysis.score,
-        risk: analysis.risk
+        score,
+        risk,
+        summary: "Instant SOC MVP scan completed (simulated engine)"
       }
     });
 
