@@ -33,7 +33,7 @@ useEffect(() => {
     setEvents(prev => [data, ...prev]);
   };
 const fetchAnalytics = async () => {
-  const res = await fetch("http://localhost:3000/analytics");
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/analytics`)
   const data = await res.json();
   setAnalytics(data);
 };
@@ -235,26 +235,22 @@ if (!user) {
 
     <p>Total Incidents: {analytics.totalIncidents}</p>
 
-    {/* ---------------- RISK ---------------- */}
     <h3>🟥 Risk Distribution</h3>
     <p>HIGH: {analytics.riskStats.HIGH}</p>
     <p>MEDIUM: {analytics.riskStats.MEDIUM}</p>
     <p>LOW: {analytics.riskStats.LOW}</p>
 
-    {/* ---------------- TOP TARGETS ---------------- */}
     <h3>🎯 Top Targets</h3>
     {analytics.topTargets.map((t, i) => (
       <p key={i}>{t.name} → {t.count}</p>
     ))}
 
-    {/* ---------------- TIMELINE ---------------- */}
-    <h3>🕒 Attack Timeline</h3>
+    <h3>🕒 Timeline</h3>
     {analytics.timelineData.map((t, i) => (
-      <p key={i}>{t.date} → {t.count} incidents</p>
+      <p key={i}>{t.date} → {t.count}</p>
     ))}
   </div>
 )}
-
             <b>{e.type}</b> — {e.target}
             <pre>{e.result?.slice?.(0, 200)}</pre>
           </div>
