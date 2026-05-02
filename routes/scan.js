@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { scanTarget } = require("../controllers/scanController");
+const verifyToken = require("../middleware/authMiddleware");
+const controller = require("../controllers/scanController");
 
-const { verifyToken } = require("../services/authSecurity");
-
+// 🔥 FIXED ROUTE
 router.post("/scan", verifyToken, controller.scanTarget);
 
 module.exports = router;
