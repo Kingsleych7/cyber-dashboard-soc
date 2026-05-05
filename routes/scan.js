@@ -5,6 +5,6 @@ const verifyToken = require("../middleware/authMiddleware");
 const controller = require("../controllers/scanController");
 
 // 🔥 FIXED ROUTE
-router.post("/",verifytoken,controller.scanTarget);
+router.post("/", verifyToken, controller.scanTarget);
 
 module.exports = router;
